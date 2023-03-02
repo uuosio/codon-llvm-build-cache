@@ -8,6 +8,10 @@ on:
   # pull_request:
   #   branches: [ master ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   run:
     runs-on: ${{ matrix.os }}
@@ -17,10 +21,19 @@ jobs:
       fail-fast: false
 
     steps:
+      - name: Setup Ninja
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          # ninja version to download. Default: 1.10.0
+          version: 1.10.0
       - name: Checkout
         working-directory: .
         run: |
           git clone --depth 1 -b codon https://github.com/exaloop/llvm-project
+      - uses: seanmiddleditch/gha-setup-ninja@master
+      - name: Build llvm
+        shell: bash
+        run: |
           cmake -S llvm-project/llvm -B llvm-project/build -G Ninja \
               -DCMAKE_BUILD_TYPE=Release \
               -DLLVM_INCLUDE_TESTS=OFF \
@@ -29,10 +42,6 @@ jobs:
               -DLLVM_ENABLE_TERMINFO=OFF \
               -DLLVM_TARGETS_TO_BUILD=all
           cmake --build llvm-project/build
-      - uses: seanmiddleditch/gha-setup-ninja@master
-      - name: Build llvm
-        working-directory: llvm-project
-        run: |
           tar -czf llvm-build-${{ matrix.os }}.tar.gz build
       - name: release-llvm
         uses: softprops/action-gh-release@v1
