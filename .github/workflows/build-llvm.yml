@@ -42,7 +42,7 @@ jobs:
               -DLLVM_ENABLE_TERMINFO=OFF \
               -DLLVM_TARGETS_TO_BUILD=all
           cmake --build llvm-project/build
-          tar -czf llvm-build-${{ matrix.os }}.tar.gz build
+          tar -czf llvm-build-${{ matrix.os }}.tar.gz llvm-project/build
       - name: release-llvm
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
