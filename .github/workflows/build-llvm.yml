@@ -17,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['windows-latest', 'ubuntu-18.04', 'macos-12']
+        os: ['windows-latest', 'ubuntu-20.04', 'macos-12']
       fail-fast: false
 
     steps:
@@ -48,4 +48,4 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            llvm-project/llvm-build-${{ matrix.os }}.tar.gz
+            llvm-build-${{ matrix.os }}.tar.gz
